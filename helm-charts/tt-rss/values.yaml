@@ -1,37 +1,37 @@
 # Default values for tt-rss.
 
 database:
-  ## possible values: [mysql, psql]
-  type: "mysql"
+  ## possible values: [mysql, pgsql]
+  type: "pgsql"
 
   ## Database host
-  host: ""
+  host: "postgresql.ttrss.svc.cluster.local"
   
   ## Database user
-  user: ""
+  user: "ttrss"
 
   ## Database name
-  name: ""
+  name: "ttrss"
 
   ## Database password
   password: ""
 
   ## Database port
-  port: "3306"
+  port: "5432"
 
 ttrss:
   ## Full URL of your tt-rss installation
-  selfUrl: "3306"
+  selfUrl: "https://tinytinyrss/"
   
   ## Operate in single user mode
-  singleUser: "true"
+  singleUser: "false"
 
 ## should be 1 for the moment
 replicaCount: 1
 
 ## Main ttrss Docker image
 image:
-  repository: reg.lan.terhaak.de/jojo/tt-rss
+  repository: rg.fr-par.scw.cloud/olivierlm/tt-rss
   tag: latest
   pullPolicy: Always
 
@@ -41,16 +41,18 @@ fullnameOverride: ""
 ## persistence for feed icons, custom htaccess and config.php
 persistence:
   accessMode: ReadWriteOnce
-  size: 500Mi
+  size: 1Gi
+  storageClassName: ""
 
 ## http exposure
 service:
-  type: NodePort
+  type: ClusterIP
   port: 80
   
 securityContext:
   ## the data file's owner group
-  supplementalGroups: [5000] 
+  supplementalGroups: [1001] 
+  fsGroup: 1001
 
 ingress:
   enabled: false

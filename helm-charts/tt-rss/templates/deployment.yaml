@@ -1,4 +1,4 @@
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "tt-rss.fullname" . }}
@@ -45,7 +45,7 @@ spec:
           - name: DB_PORT
             value: "{{ .Values.database.port }}"
           - name: SELF_URL_PATH
-            value: "{{ .Values.ttrss.selfUkl }}"
+            value: "{{ .Values.ttrss.selfUrl }}"
           - name: SINGLE_USER_MODE
             value: "{{ .Values.ttrss.singleUser }}"
           ports:
@@ -87,7 +87,7 @@ spec:
           - name: DB_PORT
             value: "{{ .Values.database.port }}"
           - name: SELF_URL_PATH
-            value: "{{ .Values.ttrss.selfUkl }}"
+            value: "{{ .Values.ttrss.selfUrl }}"
           - name: SINGLE_USER_MODE
             value: "{{ .Values.ttrss.singleUser }}"
           volumeMounts:
