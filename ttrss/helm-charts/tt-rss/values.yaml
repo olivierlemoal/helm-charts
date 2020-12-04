@@ -66,3 +66,9 @@ ingress:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
+
+ingressroute:
+  enabled: false
+  https: false
+  issuer: letsencrypt-issuer
+  host: chart-example.local

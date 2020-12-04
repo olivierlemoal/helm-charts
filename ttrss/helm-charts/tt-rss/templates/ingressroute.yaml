@@ -1,0 +1,54 @@
+{{- if .Values.ingressroute.enabled -}}
+{{- $fullName := include "tt-rss.fullname" . -}}
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ $fullName }}
+  labels:
+    app: {{ include "tt-rss.name" . }}
+    chart: {{ include "tt-rss.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - kind: Rule
+    match: Host(`{{ .Values.ingressroute.host }}`)
+    services:
+    - name: {{ include "tt-rss.fullname" . }}
+      port: {{ .Values.service.port }}
+  tls:
+    secretName: {{ $fullName }}-secret
+---
+{{- if .Values.ingressroute.https -}}
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ $fullName }}-https
+  labels:
+    app: {{ include "tt-rss.name" . }}
+    chart: {{ include "tt-rss.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - kind: Rule
+    match: Host(`{{ .Values.ingressroute.host }}`)
+    services:
+    - name: {{ $fullName }}
+      port: {{ .Values.service.port }}
+  tls:
+    secretName: {{ $fullName }}-secret
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-https
+spec:
+  redirectScheme:
+    scheme: https
+{{- end }}
+{{- end }}
