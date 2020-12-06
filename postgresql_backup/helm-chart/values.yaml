@@ -1,0 +1,17 @@
+schedule: "0 3 * * *"
+image: rg.fr-par.scw.cloud/olivierlm/postgresql-backup:latest
+
+s3:
+  access_key:
+  secret_key: 
+  endpoint: s3.fr-par.scw.cloud
+  backup_path: backup-postgres-ttrss
+
+postgres:
+  db: ttrss
+  user: postgres
+  host: postgresql.ttrss.svc.cluster.local
+  password_secret: postgresql
+  password_secret_key: postgresql-password
+
+db_backup_password:

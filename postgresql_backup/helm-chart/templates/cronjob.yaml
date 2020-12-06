@@ -1,0 +1,43 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ include "postgresql-backup.fullname" . }}
+  labels:
+    {{- include "postgresql-backup.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.schedule | quote }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: backup-maker
+            image: {{ .Values.image }}
+            envFrom:
+            - configMapRef:
+                name: {{ include "postgresql-backup.fullname" . }}-config-env
+            args:
+            - /bin/bash
+            - /do_backup.sh
+            env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgres.password_secret }}
+                  key: {{ .Values.postgres.password_secret_key }}
+            - name: S3_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "postgresql-backup.fullname" . }}-secrets
+                  key: S3_ACCESS_KEY
+            - name: S3_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "postgresql-backup.fullname" . }}-secrets
+                  key: S3_SECRET_KEY
+            - name: DB_BACKUP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "postgresql-backup.fullname" . }}-secrets
+                  key: DB_BACKUP_PASSWORD
+          restartPolicy: OnFailure
