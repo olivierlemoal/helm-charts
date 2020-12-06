@@ -6,6 +6,23 @@ s3:
   secret_key: 
   endpoint: s3.fr-par.scw.cloud
   backup_path: backup-postgres-ttrss
+  lifecycle_policy: |-
+    <?xml version="1.0" ?>
+    <LifecycleConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+      <Rule>
+        <Expiration>
+          <Days>10</Days>
+        </Expiration>
+        <ID>delete-old-backup</ID>
+        <Filter>
+          <Prefix/>
+          <And>
+            <Prefix>history</Prefix>
+          </And>
+        </Filter>
+        <Status>Enabled</Status>
+      </Rule>
+    </LifecycleConfiguration>
 
 postgres:
   db: ttrss

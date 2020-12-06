@@ -19,6 +19,10 @@ spec:
             args:
             - /bin/bash
             - /do_backup.sh
+            volumeMounts:
+            - mountPath: /lifecycle.xml
+              name: lifecycle
+              subPath: lifecycle.xml
             env:
             - name: POSTGRES_PASSWORD
               valueFrom:
@@ -41,3 +45,10 @@ spec:
                   name: {{ include "postgresql-backup.fullname" . }}-secrets
                   key: DB_BACKUP_PASSWORD
           restartPolicy: OnFailure
+          volumes:
+          - name: lifecycle
+            configMap:
+              name: {{ include "postgresql-backup.fullname" . }}-config-env
+              items:
+              - key: S3_LIFECYCLE
+                path: lifecycle.xml

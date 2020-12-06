@@ -8,3 +8,5 @@ data:
   POSTGRES_HOST: {{ .Values.postgres.host }}
   S3_BACKUP_PATH: {{ .Values.s3.backup_path }}
   S3_ENDPOINT: {{ .Values.s3.endpoint }}
+  S3_LIFECYCLE: |-
+{{ .Values.s3.lifecycle_policy | indent 4}}
