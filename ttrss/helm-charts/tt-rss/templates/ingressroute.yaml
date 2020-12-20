@@ -11,15 +11,15 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   entryPoints:
-  - websecure
+  - web
   routes:
   - kind: Rule
     match: Host(`{{ .Values.ingressroute.host }}`)
+    middlewares:
+      - name: redirect-https
     services:
     - name: {{ include "tt-rss.fullname" . }}
       port: {{ .Values.service.port }}
-  tls:
-    secretName: {{ $fullName }}-secret
 ---
 {{- if .Values.ingressroute.https -}}
 apiVersion: traefik.containo.us/v1alpha1
