@@ -15,6 +15,7 @@ FROM debian:10
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         apache2 \
+	git \
         ca-certificates \
         libapache2-mod-php7.3 \
         php7.3-cli \
