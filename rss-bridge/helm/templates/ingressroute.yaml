@@ -1,0 +1,54 @@
+{{- if .Values.ingressroute.enabled -}}
+{{- $fullName := include "rss-bridge.fullname" . -}}
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ $fullName }}
+  labels:
+    app: {{ include "rss-bridge.name" . }}
+    chart: {{ include "rss-bridge.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  entryPoints:
+  - web
+  routes:
+  - kind: Rule
+    match: Host(`{{ .Values.ingressroute.host }}`)
+    middlewares:
+      - name: redirect-https
+    services:
+    - name: {{ include "rss-bridge.fullname" . }}
+      port: {{ .Values.service.port }}
+---
+{{- if .Values.ingressroute.https -}}
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ $fullName }}-https
+  labels:
+    app: {{ include "rss-bridge.name" . }}
+    chart: {{ include "rss-bridge.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - kind: Rule
+    match: Host(`{{ .Values.ingressroute.host }}`)
+    services:
+    - name: {{ $fullName }}
+      port: {{ .Values.service.port }}
+  tls:
+    secretName: {{ $fullName }}-secret
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-https
+spec:
+  redirectScheme:
+    scheme: https
+{{- end }}
+{{- end }}
