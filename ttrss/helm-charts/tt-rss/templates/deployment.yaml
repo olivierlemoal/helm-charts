@@ -20,34 +20,74 @@ spec:
         release: {{ .Release.Name }}
     spec:
       containers:
-        - name: tt-rss
+        - name: app
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-          - name: MODE
-            value: app 
-          - name: DB_TYPE
+          - name: TTRSS_DB_TYPE
             value: "{{ .Values.database.type }}"
-          - name: DB_HOST
+          - name: TTRSS_DB_HOST
             value: "{{ .Values.database.host }}"
-          - name: DB_USER
+          - name: TTRSS_DB_USER
             valueFrom:
               secretKeyRef:
                 name: {{ include "tt-rss.fullname" . }}
                 key: db-user
-          - name: DB_NAME
+          - name: TTRSS_DB_NAME
             value: "{{ .Values.database.name }}"
-          - name: DB_PASS
+          - name: TTRSS_DB_PASS
             valueFrom:
               secretKeyRef:
                 name: {{ include "tt-rss.fullname" . }}
                 key: db-password
-          - name: DB_PORT
+          - name: TTRSS_DB_PORT
             value: "{{ .Values.database.port }}"
-          - name: SELF_URL_PATH
+          - name: TTRSS_SELF_URL_PATH
             value: "{{ .Values.ttrss.selfUrl }}"
-          - name: SINGLE_USER_MODE
+          - name: TTRSS_SINGLE_USER_MODE
             value: "{{ .Values.ttrss.singleUser }}"
+          ports:
+            - name: php
+              containerPort: 9000
+              protocol: TCP
+          volumeMounts:
+          - mountPath: /var/www/html
+            name: tt-rss-app
+
+        - name: updater
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/opt/tt-rss/updater.sh"]
+          env:
+          - name: TTRSS_DB_TYPE
+            value: "{{ .Values.database.type }}"
+          - name: TTRSS_DB_HOST
+            value: "{{ .Values.database.host }}"
+          - name: TTRSS_DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "tt-rss.fullname" . }}
+                key: db-user
+          - name: TTRSS_DB_NAME
+            value: "{{ .Values.database.name }}"
+          - name: TTRSS_DB_PASS
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "tt-rss.fullname" . }}
+                key: db-password
+          - name: TTRSS_DB_PORT
+            value: "{{ .Values.database.port }}"
+          - name: TTRSS_SELF_URL_PATH
+            value: "{{ .Values.ttrss.selfUrl }}"
+          - name: TTRSS_SINGLE_USER_MODE
+            value: "{{ .Values.ttrss.singleUser }}"
+          volumeMounts:
+          - mountPath: /var/www/html
+            name: tt-rss-app
+
+        - name: nginx
+          image: nginx:alpine
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
               containerPort: 8080
@@ -59,45 +99,21 @@ spec:
               path: /
               port: http
           volumeMounts:
-          - mountPath: "/data"
-            name: "tt-rss-data"
-
-        - name: tt-rss-updater
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env:
-          - name: MODE
-            value: updater
-          - name: DB_TYPE
-            value: "{{ .Values.database.type }}"
-          - name: DB_HOST
-            value: "{{ .Values.database.host }}"
-          - name: DB_USER
-            valueFrom:
-              secretKeyRef:
-                name: {{ include "tt-rss.fullname" . }}
-                key: db-user
-          - name: DB_NAME
-            value: "{{ .Values.database.name }}"
-          - name: DB_PASS
-            valueFrom:
-              secretKeyRef:
-                name: {{ include "tt-rss.fullname" . }}
-                key: db-password
-          - name: DB_PORT
-            value: "{{ .Values.database.port }}"
-          - name: SELF_URL_PATH
-            value: "{{ .Values.ttrss.selfUrl }}"
-          - name: SINGLE_USER_MODE
-            value: "{{ .Values.ttrss.singleUser }}"
-          volumeMounts:
-          - mountPath: "/data"
-            name: "tt-rss-data"
+          - mountPath: /var/www/html
+            name: tt-rss-app
+            readOnly: true
+          - name: tt-rss-nginx-conf
+            mountPath: /etc/nginx/nginx.conf
+            subPath: nginx.conf
+            readOnly: true
 
       volumes:
-      - name: "tt-rss-data"
+      - name: tt-rss-app
         persistentVolumeClaim:
           claimName: {{ include "tt-rss.fullname" . }}
+      - name: tt-rss-nginx-conf
+        configMap:
+          name: {{ include "tt-rss.fullname" . }}-nginx
 
     {{- if .Values.securityContext }}
       securityContext:
