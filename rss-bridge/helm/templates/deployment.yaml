@@ -32,6 +32,10 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+          - mountPath: /app/whitelist.txt
+            name: whitelist
+            subPath: whitelist.txt
           ports:
             - name: http
               containerPort: 80
@@ -58,3 +62,11 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      volumes:
+      - name: whitelist
+        configMap: 
+          name: {{ include "rss-bridge.fullname" . }}-whitelist
+          items:
+          - key: whitelist
+            path: whitelist.txt
+        

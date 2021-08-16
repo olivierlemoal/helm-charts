@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "rss-bridge.fullname" . }}-whitelist
+data:
+  whitelist: |-
+{{ .Values.whitelist | indent 4 }}

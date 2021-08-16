@@ -10,6 +10,22 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
 
+whitelist: |
+  Bandcamp
+  Cryptome
+  DansTonChat
+  DuckDuckGo
+  Facebook
+  Flickr
+  GoogleSearch
+  Identica
+  Instagram
+  OpenClassrooms
+  Pinterest
+  Scmb
+  Twitter
+  Wikipedia
+  Youtube
 
 podAnnotations: {}
 
