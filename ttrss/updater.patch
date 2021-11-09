@@ -1,0 +1,9 @@
+27c27,32
+< sudo -E -u app /usr/bin/php8 /var/www/html/tt-rss/update_daemon2.php
+---
+> if [ "$UPDATER_QUIET" = true ]; then
+> 	sudo -E -u app /usr/bin/php8 /var/www/html/tt-rss/update_daemon2.php --quiet
+> else
+> 	sudo -E -u app /usr/bin/php8 /var/www/html/tt-rss/update_daemon2.php
+> fi
+> 

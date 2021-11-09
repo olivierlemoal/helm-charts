@@ -6,6 +6,7 @@ GIT="https://git.tt-rss.org/fox/ttrss-docker-compose"
 TEMP=$(mktemp -d)
 
 git clone "$GIT" "$TEMP"
+patch -p0 "$TEMP/app/updater.sh" < updater.patch
 cd "$TEMP/app"
 docker build -t rg.fr-par.scw.cloud/olivierlm/$IMAGE_NAME:$(date +%Y-%m-%d) -t rg.fr-par.scw.cloud/olivierlm/tt-rss:latest .
 docker push "rg.fr-par.scw.cloud/olivierlm/$IMAGE_NAME:latest"

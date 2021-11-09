@@ -26,6 +26,9 @@ ttrss:
   ## Operate in single user mode
   singleUser: "false"
 
+updater:
+  quiet: true
+
 ## should be 1 for the moment
 replicaCount: 1
 

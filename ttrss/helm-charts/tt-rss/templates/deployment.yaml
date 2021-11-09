@@ -81,6 +81,8 @@ spec:
             value: "{{ .Values.ttrss.selfUrl }}"
           - name: TTRSS_SINGLE_USER_MODE
             value: "{{ .Values.ttrss.singleUser }}"
+          - name: UPDATER_QUIET
+            value: "{{ .Values.updater.quiet }}"
           volumeMounts:
           - mountPath: /var/www/html
             name: tt-rss-app
