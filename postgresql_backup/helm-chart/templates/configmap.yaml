@@ -6,6 +6,7 @@ data:
   POSTGRES_DB: {{ .Values.postgres.db }}
   POSTGRES_USER: {{ .Values.postgres.user }}
   POSTGRES_HOST: {{ .Values.postgres.host }}
+  COMPRESSION_LEVEL: {{ .Values.compression_level | quote }}
   S3_BACKUP_PATH: {{ .Values.s3.backup_path }}
   S3_ENDPOINT: {{ .Values.s3.endpoint }}
   S3_LIFECYCLE: |-

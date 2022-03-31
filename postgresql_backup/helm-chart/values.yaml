@@ -1,4 +1,5 @@
 schedule: "0 3 * * *"
+compression_level: 3
 image: rg.fr-par.scw.cloud/olivierlm/postgresql-backup:latest
 
 s3:
@@ -29,6 +30,6 @@ postgres:
   user: postgres
   host: postgresql.ttrss.svc.cluster.local
   password_secret: postgresql
-  password_secret_key: postgresql-password
+  password_secret_key: ""
 
-db_backup_password:
+db_backup_password: ""
